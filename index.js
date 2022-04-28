@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const usuario = require("./rotas/usuario");
 const nota = require("./rotas/nota");
-const { conexao } = require("./bd");
+const bd = require("./bd");
 
 app.use(express.json());
 

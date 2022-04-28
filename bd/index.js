@@ -1,12 +1,8 @@
-const { Sequelize } = require("sequelize");
-
-const options = {
-  username: "admin",
-  password: "notes123",
-  database: "notes",
-  host: "notes.cgssmrnlwpdu.us-east-2.rds.amazonaws.com",
-  dialect: "mysql",
-};
+const { Sequelize, DataTypes } = require("sequelize");
+const options = require("../config/bd");
+const _usuario = require("./auto/usuario");
+const _nota = require("./auto/nota");
+const _checklist = require("./auto/checklist");
 
 const conexao = new Sequelize(options);
 conexao
@@ -18,4 +14,11 @@ conexao
     console.log("Falha ao conectar ao banco de dados: " + erro.message);
   });
 
-module.exports = { conexao };
+const usuario = _usuario(conexao, DataTypes);
+const nota = _nota(conexao, DataTypes);
+const checklist = _checklist(conexao, DataTypes);
+
+nota.hasMany(checklist, { as: "checklists", foreignKey: "notaId" });
+nota.belongTo(usuario, { as: "usuario", foreignKey: "usuarioId" });
+
+module.exports = { conexao, usuario, nota, checklist };

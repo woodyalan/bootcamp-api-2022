@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const router = Router();
+const { usuario } = require("../bd");
 
 router.get("/", (req, res) => {
   res.send("Nota GET");
@@ -7,6 +8,8 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   console.log(req.body);
+
+  usuario.create();
 
   res.send("Usuário POST");
 });
