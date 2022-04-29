@@ -19,6 +19,6 @@ const nota = _nota(conexao, DataTypes);
 const checklist = _checklist(conexao, DataTypes);
 
 nota.hasMany(checklist, { as: "checklists", foreignKey: "notaId" });
-nota.belongTo(usuario, { as: "usuario", foreignKey: "usuarioId" });
+nota.belongsTo(usuario, { as: "usuario", foreignKey: "usuarioId" });
 
 module.exports = { conexao, usuario, nota, checklist };

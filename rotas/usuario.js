@@ -1,23 +1,26 @@
 const { Router } = require("express");
 const router = Router();
-const { usuario } = require("../bd");
+const { criar, atualizar } = require("../controle/usuario");
 
 router.get("/", (req, res) => {
   res.send("Nota GET");
 });
 
-router.post("/", (req, res) => {
-  console.log(req.body);
+router.post("/", async (req, res) => {
+  const { nome, email, senha } = req.body;
 
-  usuario.create();
+  const usuario = await criar(nome, email, senha);
 
-  res.send("Usuário POST");
+  res.send(usuario);
 });
 
-router.put("/", (req, res) => {
-  console.log(req.body);
+router.put("/:id", async (req, res) => {
+  const { nome, senha } = req.body;
+  const { id } = req.params;
 
-  res.send("Usuário PUT");
+  const usuario = await atualizar(id, nome, senha);
+
+  res.send(usuario);
 });
 
 router.delete("/", (req, res) => {
