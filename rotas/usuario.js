@@ -1,9 +1,13 @@
 const { Router } = require("express");
 const router = Router();
-const { criar, atualizar } = require("../controle/usuario");
+const { criar, atualizar, buscar, remover } = require("../controle/usuario");
 
-router.get("/", (req, res) => {
-  res.send("Nota GET");
+router.get("/:id?", async (req, res) => {
+  const { id } = req.params;
+
+  const resultado = await buscar(id);
+
+  res.send(resultado);
 });
 
 router.post("/", async (req, res) => {
@@ -23,8 +27,12 @@ router.put("/:id", async (req, res) => {
   res.send(usuario);
 });
 
-router.delete("/", (req, res) => {
-  res.send("Usuário DELETE");
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  await remover(id);
+
+  res.send();
 });
 
 module.exports = router;

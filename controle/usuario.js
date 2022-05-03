@@ -32,9 +32,17 @@ const atualizar = async (id, nome, senha) => {
 };
 
 const buscar = async (id = null) => {
-  const resultado = await usuario.findByPk(id);
+  const resultado = id ? await usuario.findByPk(id) : await usuario.findAll();
 
   return resultado;
 };
 
-module.exports = { criar, atualizar };
+const remover = async (id) => {
+  await usuario.destroy({
+    where: {
+      id,
+    },
+  });
+};
+
+module.exports = { criar, atualizar, buscar, remover };
