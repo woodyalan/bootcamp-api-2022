@@ -1,14 +1,16 @@
 const { Router } = require("express");
 const router = Router();
+const { criar } = require("../controle/nota");
 
 router.get("/:id?", (req, res) => {
   const { id } = req.params;
   res.send("Notas GET " + id);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { body } = req;
-  console.log(body);
+
+  const nota = await criar(body);
 
   res.send("Nota POST");
 });
