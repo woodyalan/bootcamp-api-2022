@@ -1,4 +1,4 @@
-const { nota, checklist, conexao } = require("../bd");
+const { nota, checklist, usuario, conexao } = require("../bd");
 
 const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
   const transacao = await conexao.transaction();
@@ -31,10 +31,31 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
     }
 
     await transacao.commit();
+
+    return await buscar(novaNota.id);
   } catch (erro) {
     console.log(erro);
     await transacao.rollback();
   }
 };
 
-module.exports = { criar };
+const buscar = async (id = null) => {
+  let resultado;
+
+  if (id) {
+    resultado = await nota.findOne({
+      where: { id },
+      include: [
+        {
+          model: usuario,
+          as: "usuario",
+        },
+      ],
+    });
+  } else {
+  }
+
+  return resultado;
+};
+
+module.exports = { criar, buscar };

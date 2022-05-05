@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
 
   const nota = await criar(body);
 
-  res.send("Nota POST");
+  res.send(nota);
 });
 
 router.put("/:id", (req, res) => {
