@@ -1,21 +1,29 @@
 const { Router } = require("express");
 const router = Router();
-const { criar, buscar } = require("../controle/nota");
+const { criar, buscar, remover } = require("../controle/nota");
 
 router.get("/:id?", async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  const resultado = await buscar(id);
+    const resultado = await buscar(id);
 
-  res.send(resultado);
+    res.send(resultado);
+  } catch (erro) {
+    res.status(500).send({ mensagem: erro.message });
+  }
 });
 
 router.post("/", async (req, res) => {
-  const { body } = req;
+  try {
+    const { body } = req;
 
-  const nota = await criar(body);
+    const nota = await criar(body);
 
-  res.send(nota);
+    res.send(nota);
+  } catch (erro) {
+    res.status(500).send({ mensagem: erro.message });
+  }
 });
 
 router.put("/:id", (req, res) => {
@@ -26,8 +34,14 @@ router.put("/:id", (req, res) => {
   res.send("Nota PUT");
 });
 
-router.delete("/", (req, res) => {
-  res.send("Nota DELETE");
+router.delete("/:id", async (req, res) => {
+  try {
+    await remover(req.params.id);
+
+    res.send();
+  } catch (erro) {
+    res.status(500).send({ mensagem: erro.message });
+  }
 });
 
 module.exports = router;

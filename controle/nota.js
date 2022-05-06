@@ -36,6 +36,8 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
   } catch (erro) {
     console.log(erro);
     await transacao.rollback();
+
+    throw erro;
   }
 };
 
@@ -65,4 +67,25 @@ const buscar = async (id = null) => {
   return resultado;
 };
 
-module.exports = { criar, buscar };
+const remover = async (id) => {
+  const transaction = await conexao.transaction();
+
+  try {
+    await checklist.destroy({
+      where: {
+        notaId: id,
+      },
+      transaction,
+    });
+
+    await nota.destroy({ where: { id }, transaction });
+
+    await transaction.commit();
+  } catch (erro) {
+    await transaction.rollback();
+
+    throw erro;
+  }
+};
+
+module.exports = { criar, buscar, remover };
