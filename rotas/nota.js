@@ -1,10 +1,13 @@
 const { Router } = require("express");
 const router = Router();
-const { criar } = require("../controle/nota");
+const { criar, buscar } = require("../controle/nota");
 
-router.get("/:id?", (req, res) => {
+router.get("/:id?", async (req, res) => {
   const { id } = req.params;
-  res.send("Notas GET " + id);
+
+  const resultado = await buscar(id);
+
+  res.send(resultado);
 });
 
 router.post("/", async (req, res) => {

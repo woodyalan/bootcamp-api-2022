@@ -42,17 +42,24 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
 const buscar = async (id = null) => {
   let resultado;
 
+  let include = [
+    {
+      model: usuario,
+      as: "usuario",
+    },
+    {
+      model: checklist,
+      as: "checklists",
+    },
+  ];
+
   if (id) {
     resultado = await nota.findOne({
       where: { id },
-      include: [
-        {
-          model: usuario,
-          as: "usuario",
-        },
-      ],
+      include,
     });
   } else {
+    resultado = await nota.findAll({ include });
   }
 
   return resultado;
