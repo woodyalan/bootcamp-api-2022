@@ -41,7 +41,7 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
   }
 };
 
-const buscar = async (id = null) => {
+const buscar = async (id = null, transaction = null) => {
   let resultado;
 
   let include = [
@@ -59,9 +59,10 @@ const buscar = async (id = null) => {
     resultado = await nota.findOne({
       where: { id },
       include,
+      transaction,
     });
   } else {
-    resultado = await nota.findAll({ include });
+    resultado = await nota.findAll({ include, transaction });
   }
 
   return resultado;
@@ -88,4 +89,59 @@ const remover = async (id) => {
   }
 };
 
-module.exports = { criar, buscar, remover };
+const atualizar = async (id, titulo, descricao, checklists = []) => {
+  const transaction = await conexao.transaction();
+
+  try {
+    await nota.update(
+      {
+        titulo,
+        descricao,
+      },
+      {
+        where: { id },
+        transaction,
+      }
+    );
+
+    if (checklists && checklists.length > 0) {
+      for (const item of checklists) {
+        if (item.id) {
+          await checklist.update(
+            {
+              descricao: item.descricao,
+              concluida: item.concluida,
+            },
+            {
+              where: { id: item.id },
+              transaction,
+            }
+          );
+        } else {
+          await checklist.create(
+            {
+              notaId: id,
+              descricao: item.descricao,
+              concluida: item.concluida,
+            },
+            {
+              transaction,
+            }
+          );
+        }
+      }
+    }
+
+    const notaAtualizada = await buscar(id, transaction);
+
+    await transaction.commit();
+
+    return notaAtualizada;
+  } catch (erro) {
+    await transaction.rollback();
+
+    throw erro;
+  }
+};
+
+module.exports = { criar, buscar, remover, atualizar };
