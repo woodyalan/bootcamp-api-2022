@@ -1,4 +1,6 @@
 const { usuario } = require("../bd");
+const jwt = require("jsonwebtoken");
+const { secret } = require("../config/seguranca");
 
 const criar = async (nome, email, senha) => {
   let [created] = await usuario.findOrCreate({
@@ -45,4 +47,20 @@ const remover = async (id) => {
   });
 };
 
-module.exports = { criar, atualizar, buscar, remover };
+const login = async (email, senha) => {
+  try {
+    const user = await usuario.findOne({
+      where: { email: email },
+    });
+
+    if (!user || senha !== user.senha) return false;
+
+    return jwt.sign({ id: user.id }, secret, {
+      expiresIn: "24h",
+    });
+  } catch (erro) {
+    throw erro;
+  }
+};
+
+module.exports = { criar, atualizar, buscar, remover, login };
