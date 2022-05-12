@@ -41,7 +41,7 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
   }
 };
 
-const buscar = async (id = null, transaction = null) => {
+const buscar = async (usuarioId, id = null, transaction = null) => {
   let resultado;
 
   let include = [
@@ -57,12 +57,16 @@ const buscar = async (id = null, transaction = null) => {
 
   if (id) {
     resultado = await nota.findOne({
-      where: { id },
+      where: { id, usuarioId },
       include,
       transaction,
     });
   } else {
-    resultado = await nota.findAll({ include, transaction });
+    resultado = await nota.findAll({
+      where: { usuarioId },
+      include,
+      transaction,
+    });
   }
 
   return resultado;

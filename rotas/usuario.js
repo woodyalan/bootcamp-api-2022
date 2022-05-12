@@ -2,10 +2,11 @@ const { Router } = require("express");
 const router = Router();
 const { criar, atualizar, buscar, remover } = require("../controle/usuario");
 
-router.get("/:id?", async (req, res) => {
-  const { id } = req.params;
+router.get("/", async (req, res) => {
+  // const { id } = req.params;
+  const { userId } = req;
 
-  const resultado = await buscar(id);
+  const resultado = await buscar(userId);
 
   res.send(resultado);
 });
@@ -18,9 +19,9 @@ router.post("/", async (req, res) => {
   res.send(usuario);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/", async (req, res) => {
   const { nome, senha } = req.body;
-  const { id } = req.params;
+  const id = req.userId;
 
   const usuario = await atualizar(id, nome, senha);
 

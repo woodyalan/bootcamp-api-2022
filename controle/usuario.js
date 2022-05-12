@@ -1,5 +1,6 @@
 const { usuario } = require("../bd");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { secret } = require("../config/seguranca");
 
 const criar = async (nome, email, senha) => {
@@ -33,8 +34,8 @@ const atualizar = async (id, nome, senha) => {
   return await buscar(id);
 };
 
-const buscar = async (id = null) => {
-  const resultado = id ? await usuario.findByPk(id) : await usuario.findAll();
+const buscar = async (id) => {
+  const resultado = await usuario.findByPk(id);
 
   return resultado;
 };
@@ -49,11 +50,13 @@ const remover = async (id) => {
 
 const login = async (email, senha) => {
   try {
-    const user = await usuario.findOne({
+    const user = await usuario.scope("login").findOne({
       where: { email: email },
     });
 
-    if (!user || senha !== user.senha) return false;
+    const senhaCorreta = await bcrypt.compare(senha, user.senha);
+
+    if (!senhaCorreta) return false;
 
     return jwt.sign({ id: user.id }, secret, {
       expiresIn: "24h",

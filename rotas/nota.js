@@ -5,8 +5,9 @@ const { criar, buscar, remover, atualizar } = require("../controle/nota");
 router.get("/:id?", async (req, res) => {
   try {
     const { id } = req.params;
+    const usuarioId = req.userId;
 
-    const resultado = await buscar(id);
+    const resultado = await buscar(usuarioId, id);
 
     res.send(resultado);
   } catch (erro) {
