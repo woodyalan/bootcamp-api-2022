@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const { check, validationResult } = require("express-validator");
 const router = Router();
 const { criar, atualizar, buscar, remover } = require("../controle/usuario");
 
@@ -11,7 +12,11 @@ router.get("/", async (req, res) => {
   res.send(resultado);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", check("nome").trim(), async (req, res) => {
+  const erros = validationResult(req);
+
+  if (!erros.isEmpty()) return res.status(400).send({ mensagem: erros });
+
   const { nome, email, senha } = req.body;
 
   const usuario = await criar(nome, email, senha);

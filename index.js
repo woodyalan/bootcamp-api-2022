@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 const usuario = require("./rotas/usuario");
 const nota = require("./rotas/nota");
@@ -7,6 +8,7 @@ const cadastro = require("./rotas/cadastro");
 const autorizacao = require("./middleware/autorizacao");
 
 app.use(express.json());
+app.use(morgan("dev"));
 
 app.use("/login", login);
 app.use("/cadastro", cadastro);

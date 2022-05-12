@@ -3,5 +3,6 @@
   "password": "notes123",
   "database": "notes",
   "host": "notes.cgssmrnlwpdu.us-east-2.rds.amazonaws.com",
-  "dialect": "mysql"
+  "dialect": "mysql",
+  "logging": false
 }

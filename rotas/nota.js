@@ -1,9 +1,16 @@
 const { Router } = require("express");
+const { check, validationResult } = require("express-validator");
 const router = Router();
 const { criar, buscar, remover, atualizar } = require("../controle/nota");
 
-router.get("/:id?", async (req, res) => {
+router.get("/:id?", check("id").optional().isInt(), async (req, res) => {
   try {
+    const erros = validationResult(req);
+
+    if (!erros.isEmpty()) {
+      return res.status(400).send({ mensagem: erros.array() });
+    }
+
     const { id } = req.params;
     const usuarioId = req.userId;
 
