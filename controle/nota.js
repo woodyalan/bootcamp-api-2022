@@ -32,7 +32,7 @@ const criar = async ({ usuarioId, titulo, descricao, checklists }) => {
 
     await transacao.commit();
 
-    return await buscar(novaNota.id);
+    return await buscar(usuarioId, novaNota.id);
   } catch (erro) {
     console.log(erro);
     await transacao.rollback();
@@ -72,18 +72,22 @@ const buscar = async (usuarioId, id = null, transaction = null) => {
   return resultado;
 };
 
-const remover = async (id) => {
+const remover = async (id, usuarioId) => {
   const transaction = await conexao.transaction();
 
   try {
-    await checklist.destroy({
-      where: {
-        notaId: id,
-      },
-      transaction,
-    });
+    const notaExists = await buscar(usuarioId, id, transaction);
 
-    await nota.destroy({ where: { id }, transaction });
+    if (notaExists) {
+      await checklist.destroy({
+        where: {
+          notaId: id,
+        },
+        transaction,
+      });
+
+      await nota.destroy({ where: { id, usuarioId }, transaction });
+    }
 
     await transaction.commit();
   } catch (erro) {
@@ -93,7 +97,7 @@ const remover = async (id) => {
   }
 };
 
-const atualizar = async (id, titulo, descricao, checklists = []) => {
+const atualizar = async (id, usuarioId, titulo, descricao, checklists = []) => {
   const transaction = await conexao.transaction();
 
   try {
@@ -103,7 +107,7 @@ const atualizar = async (id, titulo, descricao, checklists = []) => {
         descricao,
       },
       {
-        where: { id },
+        where: { id, usuarioId },
         transaction,
       }
     );

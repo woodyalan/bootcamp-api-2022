@@ -17,7 +17,9 @@ router.get("/:id?", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { body } = req;
+    let { body } = req;
+
+    body = { ...body, usuarioId: req.userId };
 
     const nota = await criar(body);
 
@@ -30,9 +32,10 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { descricao, titulo, checklists } = req.body;
+  const usuarioId = req.userId;
 
   try {
-    const nota = await atualizar(id, titulo, descricao, checklists);
+    const nota = await atualizar(id, usuarioId, titulo, descricao, checklists);
 
     res.send(nota);
   } catch (erro) {
@@ -42,7 +45,9 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await remover(req.params.id);
+    const usuarioId = req.userId;
+
+    await remover(req.params.id, usuarioId);
 
     res.send();
   } catch (erro) {
