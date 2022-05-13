@@ -12,17 +12,33 @@ router.get("/", async (req, res) => {
   res.send(resultado);
 });
 
-router.post("/", check("nome").trim(), async (req, res) => {
-  const erros = validationResult(req);
+router.post(
+  "/",
+  check("nome").trim().not().isEmpty().withMessage("Nome é obrigatório"),
+  check("email")
+    .isEmail()
+    .withMessage("E-mail inválido")
+    .not()
+    .isEmpty()
+    .withMessage("E-mail é obrigatório"),
+  check("senha")
+    .isLength({ min: 5 })
+    .withMessage("Senha precisa ter no mínimo 5 caracteres")
+    .not()
+    .isEmpty()
+    .withMessage("Senha é obrigatória"),
+  async (req, res) => {
+    const erros = validationResult(req);
 
-  if (!erros.isEmpty()) return res.status(400).send({ mensagem: erros });
+    if (!erros.isEmpty()) return res.status(400).send({ mensagem: erros });
 
-  const { nome, email, senha } = req.body;
+    const { nome, email, senha } = req.body;
 
-  const usuario = await criar(nome, email, senha);
+    const usuario = await criar(nome, email, senha);
 
-  res.send(usuario);
-});
+    res.send(usuario);
+  }
+);
 
 router.put("/", async (req, res) => {
   const { nome, senha } = req.body;

@@ -1,20 +1,35 @@
 const jwt = require("jsonwebtoken");
+const { check, validationResult } = require("express-validator");
 const { secret } = require("../config/seguranca");
 
-module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
+module.exports = [
+  check("authorization")
+    .not()
+    .isEmpty()
+    .withMessage("Token é obrigatório")
+    .isJWT()
+    .withMessage("Token precisa estar no formato JWT"),
+  (req, res, next) => {
+    const erros = validationResult(req);
 
-  if (!authorization) {
-    return res.status(403).send({ mensagem: "Token não informado" });
-  }
+    if (!erros.isEmpty()) {
+      return res.status(400).send({ mensagem: erros });
+    }
 
-  try {
-    const decoded = jwt.verify(authorization, secret);
+    const { authorization } = req.headers;
 
-    req.userId = decoded.id;
+    if (!authorization) {
+      return res.status(403).send({ mensagem: "Token não informado" });
+    }
 
-    next();
-  } catch (erro) {
-    return res.status(500).send({ mensagem: erro.message });
-  }
-};
+    try {
+      const decoded = jwt.verify(authorization, secret);
+
+      req.userId = decoded.id;
+
+      next();
+    } catch (erro) {
+      return res.status(500).send({ mensagem: erro.message });
+    }
+  },
+];

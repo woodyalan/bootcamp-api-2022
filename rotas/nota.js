@@ -26,19 +26,29 @@ router.get(
   }
 );
 
-router.post("/", async (req, res) => {
-  try {
-    let { body } = req;
+router.post(
+  "/",
+  check("checklists").isArray().withMessage("Checklists deve ser um array"),
+  async (req, res) => {
+    try {
+      const erros = validationResult(req);
 
-    body = { ...body, usuarioId: req.userId };
+      if (!erros.isEmpty()) {
+        return res.status(400).send({ mensagem: erros });
+      }
 
-    const nota = await criar(body);
+      let { body } = req;
 
-    res.send(nota);
-  } catch (erro) {
-    res.status(500).send({ mensagem: erro.message });
+      body = { ...body, usuarioId: req.userId };
+
+      const nota = await criar(body);
+
+      res.send(nota);
+    } catch (erro) {
+      res.status(500).send({ mensagem: erro.message });
+    }
   }
-});
+);
 
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
