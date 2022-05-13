@@ -3,24 +3,28 @@ const { check, validationResult } = require("express-validator");
 const router = Router();
 const { criar, buscar, remover, atualizar } = require("../controle/nota");
 
-router.get("/:id?", check("id").optional().isInt(), async (req, res) => {
-  try {
-    const erros = validationResult(req);
+router.get(
+  "/:id?",
+  check("id").optional().isInt().withMessage("ID deve ser um número inteiro"),
+  async (req, res) => {
+    try {
+      const erros = validationResult(req);
 
-    if (!erros.isEmpty()) {
-      return res.status(400).send({ mensagem: erros.array() });
+      if (!erros.isEmpty()) {
+        return res.status(400).send({ mensagem: erros.array() });
+      }
+
+      const { id } = req.params;
+      const usuarioId = req.userId;
+
+      const resultado = await buscar(usuarioId, id);
+
+      res.send(resultado);
+    } catch (erro) {
+      res.status(500).send({ mensagem: erro.message });
     }
-
-    const { id } = req.params;
-    const usuarioId = req.userId;
-
-    const resultado = await buscar(usuarioId, id);
-
-    res.send(resultado);
-  } catch (erro) {
-    res.status(500).send({ mensagem: erro.message });
   }
-});
+);
 
 router.post("/", async (req, res) => {
   try {
